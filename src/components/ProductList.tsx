@@ -71,7 +71,7 @@ const ProductList = async ({
               alt=""
               fill
               sizes="25vw"
-              className="absolute bg-slate-100 bject-cover rounded-md z-10 hover:opacity-0 transition-opacity easy duration-500"
+              className="absolute bg-slate-100 object-contain rounded-md z-10 hover:opacity-0 transition-opacity easy duration-500"
             />
             {product.media?.items && (
               <Image
@@ -79,7 +79,7 @@ const ProductList = async ({
                 alt=""
                 fill
                 sizes="25vw"
-                className="absolute bg-slate-100 object-cover rounded-md"
+                className="absolute bg-slate-100 object-contain rounded-md"
               />
             )}
           </div>
