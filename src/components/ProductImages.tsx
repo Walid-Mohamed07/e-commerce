@@ -29,15 +29,15 @@ const ProductImages = ({ items }: { items: any }) => {
     <div className="">
       <div className="h-[500px] relative">
         <Image
-          src={items[index].image?.url}
+          src={JSON.parse(items)[index].image?.url}
           alt=""
           fill
           sizes="50vw"
-          className="object-cover rounded-md"
+          className="object-cover bg-slate-100 rounded-md"
         />
       </div>
       <div className="flex justify-between gap-4 mt-8">
-        {items.map((item:any, i:number) => (
+        {JSON.parse(items).map((item: any, i: number) => (
           <div
             className="w-1/4 h-32 relative gap-4 mt-8 cursor-pointer"
             key={item._id}
@@ -48,7 +48,7 @@ const ProductImages = ({ items }: { items: any }) => {
               alt=""
               fill
               sizes="30vw"
-              className="object-cover rounded-md"
+              className="object-cover rounded-md bg-slate-100"
             />
           </div>
         ))}
