@@ -65,12 +65,12 @@ const ProductList = async ({
           className="w-full flex flex-col gap-4 sm:w-[45%] lg:w-[22%]"
           key={product._id}
         >
-          <div className="relative w-full h-80">
+          <div className="relative w-full h-60">
             <Image
               src={product.media?.mainMedia?.image?.url || "/product.png"}
               alt=""
               fill
-              sizes="25vw"
+              sizes="15vw"
               className="absolute bg-slate-100 object-contain rounded-md z-10 hover:opacity-0 transition-opacity easy duration-500"
             />
             {product.media?.items && (

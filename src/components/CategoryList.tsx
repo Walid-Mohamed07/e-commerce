@@ -20,13 +20,13 @@ const CategoryList = async () => {
             className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/4 xl:w-1/6"
             key={item._id}
           >
-            <div className="relative bg-slate-100 w-full h-96">
+            <div className="relative bg-slate-100 w-full h-64">
               <Image
                 src={item.media.mainMedia?.image?.url || "/category.png"}
                 alt=""
                 fill
                 sizes="20vw"
-                className="object-cover"
+                className="object-contain"
               />
             </div>
             <h1 className="mt-8 font-light text-xl tracking-wide">
