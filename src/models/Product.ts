@@ -4,6 +4,10 @@ const ProductSchema = new Schema({
   name: { type: String, required: true },
   slug: { type: String, required: true },
   productType: { type: String, required: true },
+  categoryIds: {
+    type: Schema.Types.ObjectId,
+    ref: "Category",
+  },
   weightRange: {
     minValue: { type: Number },
     maxValue: { type: Number },

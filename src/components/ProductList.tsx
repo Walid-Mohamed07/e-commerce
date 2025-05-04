@@ -25,7 +25,7 @@ const ProductList = async ({
     query.name = { $regex: searchParams.name, $options: "i" };
   }
   if (categoryId) {
-    query.collectionIds = categoryId;
+    query.categoryId = categoryId;
   }
   if (searchParams?.type) {
     query.productType = { $in: [searchParams.type] };

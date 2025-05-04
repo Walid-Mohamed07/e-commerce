@@ -10,7 +10,6 @@ import { wixClientServer } from "@/lib/wixClientServer";
 import { Suspense, useContext, useEffect } from "react";
 
 const HomePage = async () => {
-
   // TEST (FETCHING ON THE CLIENT COMPONENT)
 
   // const wixClient = useWixClient()
@@ -24,7 +23,6 @@ const HomePage = async () => {
 
   //   getProducts();
   // }, [wixClient]);
-  
 
   // TEST (FETCHING ON THE SERVER COMPONENT)
 
