@@ -1,4 +1,5 @@
 import mongoose, { Schema, model, models } from "mongoose";
+import { Category } from "./Category";
 
 const ProductSchema = new Schema({
   name: { type: String, required: true },
@@ -7,6 +8,7 @@ const ProductSchema = new Schema({
   categoryIds: {
     type: Schema.Types.ObjectId,
     ref: "Category",
+    category: Category,
   },
   weightRange: {
     minValue: { type: Number },

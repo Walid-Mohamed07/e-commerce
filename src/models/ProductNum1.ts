@@ -300,3 +300,16 @@ const categoryRecord = {
   },
   numberOfProducts: 120,
 };
+
+
+// Product ----------------------------------------------------------
+
+
+{"_id":{"$oid":"680e0dc9be330171401141eb"},"name":"Shose1","slug":"shose1","productType":"physical","stock":{"trackInventory":true,"inStock":true,"inventoryStatus":"inStock","quantity":{"$numberDouble":"10.0"}},"additionalInfoSections":[{"title":"Description","description":"This is a sample product description."},{"title":"Short Description","description":"This is a short description."}],"ribbons":[{"text":"Best Seller"}],"media":{"mainMedia":{"image":{"url":"/shose1.png"},"thumbnail":{"url":"https://example.com/video.mp4"},"video":{"files":[{"url":"https://example.com/video.mp4"}]}},"items":[{"image":{"url":"/shose1.png"},"mediaType":"image","thumbnail":{"url":"/shose11.png"},"title":"Item Media","video":{"files":[{"url":""}],"stillFrameMediaId":"itemFrame123"}},{"image":{"url":"/shose11.png"}}]},"customTextFields":[{"title":"Custom Field 1","maxLength":{"$numberInt":"50"},"mandatory":true}],"productOptions":[{"optionType":"color","name":"Color","choices":[{"value":"red","description":"Red color option","media":{"mainMedia":{"image":{"url":""}},"video":{"files":[{"url":""}],"stillFrameMediaId":"redFrame123"},"mediaType":"image","thumbnail":{"url":""},"title":"Red Media"}}]}],"productPageUrl":{"base":"/products","path":"/products/shose1"},"variants":[{"_id":"variant123","variant":{"priceData":{"currency":"EGP","discountedPrice":{"$numberDouble":"19.99"},"formatted":{"price":"24.99","discountedPrice":"19.99"}},"convertedPriceData":{"currency":"USD","discountedPrice":{"$numberDouble":"18.5"},"formatted":{"price":"$22.99","discountedPrice":"$18.50"}},"costAndProfitData":{"formattedItemCost":"$10.00","profit":{"$numberDouble":"9.99"},"formattedProfit":"$9.99","profitMargin":{"$numberInt":"50"}},"sku":"SKU123","visible":true,"weight":{"$numberDouble":"1.5"}},"stock":{"trackQuantity":true,"inStock":true}}],"price":{"currency":"EGP","discountedPrice":{"$numberDouble":"19.99"},"formatted":{"price":"24.99","discountedPrice":"19.99"},"price":{"$numberDouble":"24.99"}},"priceData":{"currency":"EGP","discountedPrice":{"$numberDouble":"19.99"},"formatted":{"price":"24.99","discountedPrice":"19.99"}},"convertedPriceData":{"currency":"USD","discountedPrice":{"$numberDouble":"18.5"},"formatted":{"price":"23.00","discountedPrice":"18.50"}},"priceRange":{"minValue":{"$numberDouble":"15.0"},"maxValue":{"$numberDouble":"25.0"}},"costAndProfitData":{"formattedItemCost":"10.00","profit":{"$numberDouble":"9.99"},"formattedProfit":"9.99","profitMargin":{"$numberInt":"50"}},"costRange":{"minValue":{"$numberDouble":"8.0"},"maxValue":{"$numberDouble":"12.0"}},"pricePerUnitData":{"totalQuantity":{"$numberInt":"10"},"totalMeasurementUnit":"kg","baseQuantity":{"$numberInt":"1"},"baseMeasurementUnit":"kg"},"categoryId":{"$oid":"680e0b93be330171401141ea"}}
+
+
+// CAT ----------------------------------------------------------
+
+{"_id":{"$oid":"680dfae1be330171401141e7"},"name":"Fashion","slug":"fashion","media":{"mainMedia":{"image":{"url":"/cat1.png"}}},"numberOfProducts":{"$numberInt":"0"}}
+
+{"_id":{"$oid":"680e0b93be330171401141ea"},"name":"Accessories","slug":"accessories","media":{"mainMedia":{"image":{"url":"/cat2.webp"}}},"numberOfProducts":{"$numberInt":"0"}}
