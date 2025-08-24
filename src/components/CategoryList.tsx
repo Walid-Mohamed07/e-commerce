@@ -1,41 +1,80 @@
 import { dbConnect } from "@/util/db_connection";
-import { Category } from "@/models/Category"; // Assuming you have a Category model
-import Image from "next/image";
-import Link from "next/link";
-import { log } from "node:console";
+// import { Category } from "@/models/Category"; // Assuming you have a Category model
+// import Image from "next/image";
+// import Link from "next/link";
+import {
+  // dehydrate,
+  HydrationBoundary,
+  // QueryClient,
+  // useQuery,
+} from "@tanstack/react-query";
+// import { getCategories } from "@/features/category/services/category";
+// import { QueryKey } from "@/constants/queryKey";
+// import Skeleton from "./Skeleton";
+import CategoryListComponent from "@/features/category/components/CategoryListComponent";
 
-const CategoryList = async () => {
+const CATEGORY_PER_PAGE = 10;
+
+const CategoryList = async ({
+  categoryId,
+  limit,
+  searchParams,
+}: {
+  categoryId?: string;
+  limit?: number;
+  searchParams?: any;
+}) => {
   // Connect to MongoDB
   await dbConnect();
 
-  // Fetch categories from MongoDB
-  const categories = await Category.find();
+  // Build the query object
+  const query: any = {};
+  if (searchParams?.name) {
+    query.name = { $regex: searchParams.name, $options: "i" };
+  }
+  if (categoryId) {
+    query.categoryId = categoryId;
+  }
+  if (searchParams?.type) {
+    query.productType = { $in: [searchParams.type] };
+  }
+  if (searchParams?.min || searchParams?.max) {
+    query["priceData.discountedPrice"] = {
+      ...(searchParams.min && { $gte: parseFloat(searchParams.min) }),
+      ...(searchParams.max && { $lte: parseFloat(searchParams.max) }),
+    };
+  }
+
+  // Pagination and sorting
+  const skip =
+    searchParams?.page && limit
+      ? parseInt(searchParams.page) * (limit || CATEGORY_PER_PAGE)
+      : 0;
+  const sort: any = {};
+  if (searchParams?.sort) {
+    const [sortType, sortBy] = searchParams.sort.split(" ");
+    sort[sortBy] = sortType === "asc" ? 1 : -1;
+  }
+  const queryLimit = limit || CATEGORY_PER_PAGE;
+
+  // const queryClient = new QueryClient();
+
+  const payload = {
+    query: query || undefined,
+    sort: sort || undefined,
+    skip: skip || undefined,
+    limit: queryLimit,
+  };
+
+  // await queryClient.prefetchQuery({
+  //   queryKey: [QueryKey.CATEGORY, payload],
+  //   queryFn: () => getCategories(payload),
+  // });
 
   return (
-    <div className="px-4 overflow-x-scroll scrollbar-hide">
-      <div className="flex gap-4 md:gap-8">
-        {categories.map((item: any) => (
-          <Link
-            href={`/list?cat=${item.slug}`}
-            className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/4 xl:w-1/6"
-            key={item._id}
-          >
-            <div className="relative bg-slate-100 w-full h-64">
-              <Image
-                src={item.media.mainMedia?.image?.url || "/category.png"}
-                alt=""
-                fill
-                sizes="20vw"
-                className="object-contain"
-              />
-            </div>
-            <h1 className="mt-8 font-light text-xl tracking-wide">
-              {item.name}
-            </h1>
-          </Link>
-        ))}
-      </div>
-    </div>
+    <HydrationBoundary state={payload}>
+      <CategoryListComponent />
+    </HydrationBoundary>
   );
 };
 

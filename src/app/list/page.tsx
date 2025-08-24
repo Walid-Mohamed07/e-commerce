@@ -1,24 +1,28 @@
 import Filter from "@/components/Filter";
 import ProductList from "@/components/ProductList";
 import Skeleton from "@/components/Skeleton";
+import { getCategories } from "@/features/category/services/category";
 import { Category } from "@/models/Category";
 import { dbConnect } from "@/util/db_connection";
 import Image from "next/image";
-import { Suspense } from "react";
+import { Suspense, use } from "react";
 
-const ListPage = async ({
-  searchParams,
-}: {
-  searchParams: { cat: string };
-}) => {
+type SearchParams = Record<string, string | string[] | undefined>;
+
+const ListPage = async ({ searchParams }: { searchParams: SearchParams }) => {
   // Connect to MongoDB
   await dbConnect();
 
+  const resolvedSearchParams = await searchParams;
+  console.log("Resolved Search Params:", resolvedSearchParams);
+
   // Fetch the product by slug from MongoDB
-  const cat = await Category.findOne({ slug: searchParams.cat });
+  const cat = await Category.findOne({ slug: resolvedSearchParams.cat });
+  const categoriesRes = await getCategories();
+  const categories = await categoriesRes;
 
   return (
-    <div className="px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 relative">
+    <div className="px-4 md:px-8 pt-20 lg:px-16 xl:px-32 2xl:px-64 relative">
       {/* CAMPAIGN */}
       <div className="hidden bg-pink-50 px-4 sm:flex justify-between h-64">
         <div className="w-2/3 flex flex-col items-center justify-center gap-8">
@@ -31,17 +35,24 @@ const ListPage = async ({
           </button>
         </div>
         <div className="relative w-1/3">
-          <Image src="/woman.png" alt="" fill className="object-contain" />
+          <Image
+            src="/manWithHeadphone.png"
+            alt=""
+            fill
+            className="object-contain"
+          />
         </div>
       </div>
       {/* FILTER */}
-      <Filter />
+      <Filter categories={categories} />
       {/* PRODUCTS */}
-      <h1 className="mt-12 text-xl font-semibold">{cat?.name} For You!</h1>
+      {cat && (
+        <h1 className="mt-12 text-xl font-semibold">{cat?.name} For You!</h1>
+      )}
       <Suspense fallback={<Skeleton />}>
         <ProductList
           categoryId={cat?._id || "00000000-000000-000000-000000000001"}
-          searchParams={searchParams.cat}
+          searchParams={resolvedSearchParams}
         />
       </Suspense>
     </div>

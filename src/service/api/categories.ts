@@ -6,7 +6,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "@/service/Categories";
-import type { Category } from "@/models/Category";
+import type { Category } from "@/models/category.model";
 
 import { NextApiRequest, NextApiResponse } from "next";
 

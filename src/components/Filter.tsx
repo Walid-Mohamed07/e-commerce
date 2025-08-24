@@ -1,8 +1,13 @@
 "use client";
 
+import { Category } from "@/models/category.model";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-const Filter = () => {
+type Props = {
+  categories: Category[];
+};
+
+const Filter = ({ categories }: Props) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
@@ -12,7 +17,12 @@ const Filter = () => {
   ) => {
     const { name, value } = e.target;
     const params = new URLSearchParams(searchParams);
-    params.set(name, value);
+    if (value === "Type" || value === "Category" || value === "All Filters") {
+      params.delete(name);
+    } else {
+      params.set(name, value);
+    }
+    // console.log("Filter Params:", params.toString());
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -50,8 +60,11 @@ const Filter = () => {
           onChange={handleFilterChange}
         >
           <option>Category</option>
-          <option value="">New Arrival</option>
-          <option value="">Popular</option>
+          {categories.map((cat: any) => (
+            <option key={cat._id} value={cat.slug}>
+              {cat.name}
+            </option>
+          ))}
         </select>
         <select
           name=""

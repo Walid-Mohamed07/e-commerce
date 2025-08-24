@@ -1,0 +1,14 @@
+.categoryImageWrapper {
+    width: 260px;
+    height: 384px;
+}
+
+.overflow-x-scroll {
+    overflow-x: scroll;
+}
+
+@media (max-width: 768px) {
+    .flex-shrink {
+        flex-shrink: 0;
+    }
+}

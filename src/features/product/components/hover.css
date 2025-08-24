@@ -1,0 +1,8 @@
+.hoverNone {
+    opacity: 1;
+    transition: all 0.3s ease-in-out;
+}
+
+.hoverNone:hover {
+    opacity: 0;
+}

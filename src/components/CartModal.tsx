@@ -2,36 +2,34 @@
 
 import Image from "next/image";
 import { useCartStore } from "@/hooks/useCartStore";
-import { media as wixMedia } from "@wix/sdk";
-import { useWixClient } from "@/hooks/useWixClient";
-import { currentCart } from "@wix/ecom";
+// import { media as wixMedia } from "@wix/sdk";
+// import { useWixClient } from "@/hooks/useWixClient";
+// import { currentCart } from "@wix/ecom";
 
 const CartModal = () => {
   // TEMPORARY
   // const cartItems = true;
 
-  const wixClient = useWixClient();
+  // const wixClient = useWixClient();
   const { cart, isLoading, removeItem } = useCartStore();
 
   const handleCheckout = async () => {
     try {
-      const checkout =
-        await wixClient.currentCart.createCheckoutFromCurrentCart({
-          channelType: currentCart.ChannelType.WEB,
-        });
-
-      const { redirectSession } =
-        await wixClient.redirects.createRedirectSession({
-          ecomCheckout: { checkoutId: checkout.checkoutId },
-          callbacks: {
-            postFlowUrl: window.location.origin,
-            thankYouPageUrl: `${window.location.origin}/success`,
-          },
-        });
-
-      if (redirectSession?.fullUrl) {
-        window.location.href = redirectSession.fullUrl;
-      }
+      // const checkout =
+      //   await wixClient.currentCart.createCheckoutFromCurrentCart({
+      //     channelType: currentCart.ChannelType.WEB,
+      //   });
+      // const { redirectSession } =
+      //   await wixClient.redirects.createRedirectSession({
+      //     ecomCheckout: { checkoutId: checkout.checkoutId },
+      //     callbacks: {
+      //       postFlowUrl: window.location.origin,
+      //       thankYouPageUrl: `${window.location.origin}/success`,
+      //     },
+      //   });
+      // if (redirectSession?.fullUrl) {
+      //   window.location.href = redirectSession.fullUrl;
+      // }
     } catch (err) {
       console.log(err);
     }
@@ -51,12 +49,15 @@ const CartModal = () => {
               <div className="flex gap-4" key={item._id}>
                 {item.image && (
                   <Image
-                    src={wixMedia.getScaledToFillImageUrl(
-                      item.image,
-                      72,
-                      96,
-                      {}
-                    )}
+                    src={
+                      ""
+                      //   wixMedia.getScaledToFillImageUrl(
+                      //   item.image,
+                      //   72,
+                      //   96,
+                      //   {}
+                      // )
+                    }
                     alt=""
                     width={72}
                     height={96}
@@ -91,7 +92,7 @@ const CartModal = () => {
                     <span
                       className="text-blue-500"
                       style={{ cursor: isLoading ? "not-allowed" : "pointer" }}
-                      onClick={() => removeItem(wixClient, item._id!)}
+                      // onClick={() => removeItem(wixClient, item._id!)}
                     >
                       Remove
                     </span>
@@ -104,7 +105,7 @@ const CartModal = () => {
           <div className="">
             <div className="flex items-center justify-between font-semibold">
               <span className="">Subtotal</span>
-              <span className="">${cart.subtotal.amount}</span>
+              {/* <span className="">${cart.subtotal.amount}</span> */}
             </div>
             <p className="text-gray-500 text-sm mt-2 mb-4">
               Shipping and taxes calculated at checkout.
