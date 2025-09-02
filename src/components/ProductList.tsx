@@ -33,17 +33,15 @@ const ProductList = async ({
     searchParams?.min ? (query.min = parseFloat(searchParams.min)) : null;
     searchParams?.max ? (query.max = parseFloat(searchParams.max)) : null;
   }
+  if (searchParams?.sort) {
+    query.sort = `${searchParams.sort}`;
+  }
 
   // Pagination and sorting
   const skip =
     searchParams?.page && limit
       ? parseInt(searchParams.page) * (limit || PRODUCT_PER_PAGE)
       : 0;
-  const sort: any = {};
-  if (searchParams?.sort) {
-    const [sortType, sortBy] = searchParams.sort.split(" ");
-    sort[sortBy] = sortType === "asc" ? 1 : -1;
-  }
   const queryLimit = limit || PRODUCT_PER_PAGE;
 
   // // Convert searchParams to a plain object

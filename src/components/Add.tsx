@@ -13,9 +13,6 @@ const Add = ({
   variantId: string;
   stockNumber: number;
 }) => {
-  stockNumber = 10;
-  // console.log(stockNumber);
-  // console.log(productId);
   const [quantity, setQuantity] = useState(1);
 
   // // TEMPORARY

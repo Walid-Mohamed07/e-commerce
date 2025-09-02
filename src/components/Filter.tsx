@@ -17,7 +17,12 @@ const Filter = ({ categories }: Props) => {
   ) => {
     const { name, value } = e.target;
     const params = new URLSearchParams(searchParams);
-    if (value === "Type" || value === "Category" || value === "All Filters") {
+    if (
+      value === "Type" ||
+      value === "Category" ||
+      value === "All Filters" ||
+      value === "Sort By"
+    ) {
       params.delete(name);
     } else {
       params.set(name, value);
