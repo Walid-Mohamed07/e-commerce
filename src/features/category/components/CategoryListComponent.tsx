@@ -29,7 +29,7 @@ const CategoryListComponent = (prop: any) => {
     // >
     // <Suspense fallback={<Skeleton />}>
     <div className="px-4 pt-6 overflow-x-scroll scrollbar-hide hover:bg-red-600">
-      <div className="flex gap-4 md:gap-8">
+      <div className="flex gap-4 md:gap-8 mt-6">
         {categories.map((item: any) => (
           <Link
             href={`/list?cat=${item.slug}`}

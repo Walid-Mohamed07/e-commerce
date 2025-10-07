@@ -7,15 +7,15 @@ import DOMPurify from "isomorphic-dompurify";
 // import Pagination from "@/components/Pagination";
 // import ErrorToast from "@/components/Toast/ErrorToast";
 import Skeleton from "@/components/Skeleton";
+import Pagination from "@/components/Pagination";
+import { Product, ProductsQueryResult } from "@/models/product.model";
 
 function ProductListComponent({
   products,
   isLoading,
-  totalProducts,
 }: {
-  products: any[];
+  products: ProductsQueryResult;
   isLoading: boolean;
-  totalProducts: number;
 }) {
   if (isLoading) return <Skeleton />;
   {
@@ -29,7 +29,7 @@ function ProductListComponent({
         <span className="text-gray-500">No products found</span>
         </div>
         ) : ( */}
-      {products.map((product: any) => (
+      {products.items.map((product: Product) => (
         // <ProductCard key={product._id} product={product} />
         <Link
           key={product._id}
@@ -79,7 +79,11 @@ function ProductListComponent({
           </button>
         </Link>
       ))}
-      {/* )} */}
+      <Pagination
+        currentPage={products.currentPage || 0}
+        hasNext={products.currentPage! < products.totalPages!}
+        hasPrev={products.currentPage! > 1}
+      />
       {/* {searchParams?.cat || searchParams?.name ? (
         <Pagination
           currentPage={searchParams?.page || 0}

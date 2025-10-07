@@ -66,8 +66,8 @@ const SinglePage = async ({
         {product.variants && product.productOptions ? (
           <CustomizeProducts
             productId={product._id!}
-            variants={JSON.stringify(product.variants)}
-            productOptions={JSON.stringify(product.productOptions)}
+            variants={product.variants}
+            productOptions={product.productOptions}
           />
         ) : (
           <Add

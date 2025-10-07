@@ -5,7 +5,7 @@ import { getCategories } from "@/features/category/services/category";
 import { Category } from "@/models/Category";
 import { dbConnect } from "@/util/db_connection";
 import Image from "next/image";
-import { Suspense, use } from "react";
+import { Suspense } from "react";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -52,6 +52,7 @@ const ListPage = async ({ searchParams }: { searchParams: SearchParams }) => {
       <Suspense fallback={<Skeleton />}>
         <ProductList
           categoryId={cat?._id || "00000000-000000-000000-000000000001"}
+          // limit={2}
           searchParams={resolvedSearchParams}
         />
       </Suspense>

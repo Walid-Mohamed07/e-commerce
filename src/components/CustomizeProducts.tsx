@@ -1,8 +1,13 @@
 "use client";
 
-import { products } from "@wix/stores";
+// import { products } from "@wix/stores";
 import { useEffect, useState } from "react";
 import Add from "./Add";
+import type {
+  ProductVariant,
+  ProductOption,
+  ProductOptionChoice,
+} from "@/models/product.model";
 
 const CustomizeProducts = ({
   productId,
@@ -10,16 +15,16 @@ const CustomizeProducts = ({
   productOptions,
 }: {
   productId: string;
-  variants: string;
-  productOptions: string;
+  variants: ProductVariant[];
+  productOptions: ProductOption[];
 }) => {
   const [selectedOptions, setSelectedOptions] = useState<{
     [key: string]: string;
   }>({});
-  const [selectedVariant, setSelectedVariant] = useState<products.Variant>();
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>();
 
   useEffect(() => {
-    const variant = JSON.parse(variants).find((v: products.Variant) => {
+    const variant = variants.find((v: ProductVariant) => {
       const variantChoices = v.choices;
       if (!variantChoices) return false;
       return Object.entries(selectedOptions).every(
@@ -34,7 +39,7 @@ const CustomizeProducts = ({
   };
 
   const isVariantInStock = (choices: { [key: string]: string }) => {
-    return JSON.parse(variants).some((variant: products.Variant) => {
+    return variants.some((variant: ProductVariant) => {
       const variantChoices = variant.choices;
       if (!variantChoices) return false;
 
@@ -49,13 +54,17 @@ const CustomizeProducts = ({
     });
   };
 
+  console.log("Options:", productOptions);
+  console.log("variants:", variants);
+  console.log("Selected Options:", selectedOptions);
+
   return (
     <div className="flex flex-col gap-6">
-      {JSON.parse(productOptions).map((option: products.ProductOption) => (
+      {productOptions.map((option: ProductOption) => (
         <div className="flex flex-col gap-4" key={option.name}>
           <h4 className="font-medium">Choose a {option.name}</h4>
           <ul className="flex items-center gap-3">
-            {option.choices?.map((choice) => {
+            {option.choices?.map((choice: ProductOptionChoice) => {
               const disabled = !isVariantInStock({
                 ...selectedOptions,
                 [option.name!]: choice.description!,
@@ -66,7 +75,18 @@ const CustomizeProducts = ({
 
               const clickHandler = disabled
                 ? undefined
-                : () => handleOptionSelect(option.name!, choice.description!);
+                : () => {
+                    if (selected) {
+                      // Unselect if already selected
+                      setSelectedOptions((prev) => {
+                        const updated = { ...prev };
+                        delete updated[option.name!];
+                        return updated;
+                      });
+                    } else {
+                      handleOptionSelect(option.name!, choice.description!);
+                    }
+                  };
 
               return option.name === "Color" ? (
                 <li
@@ -117,7 +137,7 @@ const CustomizeProducts = ({
       />
       {/* COLOR */}
 
-      <ul className="flex items-center gap-3">
+      {/* <ul className="flex items-center gap-3">
         <li className="w-8 h-8 rounded-full ring-1 ring-gray-300 cursor-pointer relative bg-red-500">
           <div className="absolute w-10 h-10 rounded-full ring-2 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
         </li>
@@ -125,9 +145,9 @@ const CustomizeProducts = ({
         <li className="w-8 h-8 rounded-full ring-1 ring-gray-300 cursor-not-allowed relative bg-green-500">
           <div className="absolute w-10 h-[2px] bg-red-400 rotate-45 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
         </li>
-      </ul>
+      </ul> */}
       {/* OTHERS */}
-      <h4 className="font-medium">Choose a size</h4>
+      {/* <h4 className="font-medium">Choose a size</h4>
       <ul className="flex items-center gap-3">
         <li className="ring-1 ring-lama text-lama rounded-md py-1 px-4 text-sm cursor-pointer">
           Small
@@ -138,7 +158,7 @@ const CustomizeProducts = ({
         <li className="ring-1 ring-pink-200 text-white bg-pink-200 rounded-md py-1 px-4 text-sm cursor-not-allowed">
           Large
         </li>
-      </ul>
+      </ul> */}
     </div>
   );
 };

@@ -1,10 +1,12 @@
 import { dbConnect } from "@/util/db_connection";
+// import { products } from "@wix/stores";
 import { Product } from "@/models/Product";
 import { getProducts } from "@/features/product/services/product";
 import Skeleton from "@/components/Skeleton";
 import ProductListComponent from "@/features/product/components/ProductListComponent";
+import { ProductsQueryResult } from "@/models/product.model";
 
-const PRODUCT_PER_PAGE = 8;
+const PRODUCT_PER_PAGE = 4;
 
 const ProductList = async ({
   categoryId,
@@ -38,11 +40,9 @@ const ProductList = async ({
   }
 
   // Pagination and sorting
-  const skip =
-    searchParams?.page && limit
-      ? parseInt(searchParams.page) * (limit || PRODUCT_PER_PAGE)
-      : 0;
+  const page = Math.max(1, parseInt(searchParams?.page ?? "1", 10) || 1);
   const queryLimit = limit || PRODUCT_PER_PAGE;
+  const skip = (page - 1) * queryLimit;
 
   // // Convert searchParams to a plain object
   // const paramsObj: Record<string, string> = {};
@@ -50,33 +50,42 @@ const ProductList = async ({
   //   paramsObj[key] = value;
   // });
 
+  // console.log("skip, limit:", skip, queryLimit);
+
   const payload = {
     query: JSON.stringify(query),
     sort: 1,
-    skip: 0,
-    limit: 8,
+    skip,
+    limit: queryLimit,
   };
 
   // Fetch products
-  let products = [];
+  const products = [];
+  // let products: ProductsQueryResult = {
+  //   items: [],
+  //   totalCount: 0,
+  //   totalPages: 0,
+  //   currentPage: 0,
+  //   hasNext: () => false,
+  //   hasPrev: () => false,
+  //   length: 0,
+  //   pageSize: 0,
+  //   next: async () => products,
+  //   prev: async () => products,
+  // };
   let isLoading = true;
   try {
-    products = await getProducts(payload);
+    products.push(await getProducts(payload));
     isLoading = false;
   } catch (error) {
     // handle error if needed
     isLoading = false;
   }
 
-  // Count total products for pagination
-  const totalProducts = await Product.countDocuments(query);
+  // console.log("Products fetched:", products);
 
   return (
-    <ProductListComponent
-      products={products}
-      isLoading={isLoading}
-      totalProducts={totalProducts}
-    />
+    <ProductListComponent products={products[0] || {}} isLoading={isLoading} />
   );
 };
 

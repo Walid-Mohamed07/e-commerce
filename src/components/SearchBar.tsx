@@ -1,20 +1,27 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const SearchBar = () => {
-
-  const router = useRouter();
+  // const router = useRouter();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+  const searchParams = useSearchParams();
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
+    const params = new URLSearchParams(searchParams);
 
-    if(name){
-      router.push(`/list?name=${name}`)
+    if (name) {
+      // router.push(`/list?name=${name}`);
+      params.set("name", name);
+    } else {
+      params.delete("name");
     }
+    replace(`${pathname}?${params.toString()}`);
   };
 
   return (

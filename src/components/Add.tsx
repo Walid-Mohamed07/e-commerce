@@ -1,6 +1,6 @@
 "use client";
 
-// import { useCartStore } from "@/hooks/useCartStore";
+import { useCartStore } from "@/hooks/useCartStore";
 // import { useWixClient } from "@/hooks/useWixClient";
 import { useState } from "react";
 

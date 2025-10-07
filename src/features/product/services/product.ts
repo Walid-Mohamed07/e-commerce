@@ -1,6 +1,6 @@
 import { api } from "@/lib/axios";
 import { BaseResponse } from "@/models/api";
-import { Product } from "@/models/product.model";
+import { Product, ProductsQueryResult } from "@/models/product.model";
 
 // Accept a single payload object with optional properties
 export interface GetProductsPayload {
@@ -13,7 +13,7 @@ export interface GetProductsPayload {
 
 export const getProducts = async (payload: GetProductsPayload = {}) => {
   try {
-    const { data } = await api.get("/product", {
+    const { data } = await api.get<ProductsQueryResult>("/product", {
       params: payload,
     });
     console.log("Fetched products with params:", payload);
