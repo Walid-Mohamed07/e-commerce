@@ -16,7 +16,7 @@ export const getProducts = async (payload: GetProductsPayload = {}) => {
     const { data } = await api.get<ProductsQueryResult>("/product", {
       params: payload,
     });
-    console.log("Fetched products with params:", payload);
+    // console.log("Fetched products with params:", payload);
     // console.log("Fetched products:", data);
 
     return data;

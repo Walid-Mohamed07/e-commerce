@@ -6,7 +6,7 @@ import Skeleton from "@/components/Skeleton";
 import ProductListComponent from "@/features/product/components/ProductListComponent";
 import { ProductsQueryResult } from "@/models/product.model";
 
-const PRODUCT_PER_PAGE = 4;
+const PRODUCT_PER_PAGE = 8;
 
 const ProductList = async ({
   categoryId,

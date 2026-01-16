@@ -54,9 +54,9 @@ const CustomizeProducts = ({
     });
   };
 
-  console.log("Options:", productOptions);
-  console.log("variants:", variants);
-  console.log("Selected Options:", selectedOptions);
+  // console.log("Options:", productOptions);
+  // console.log("variants:", variants);
+  // console.log("Selected Options:", selectedOptions);
 
   return (
     <div className="flex flex-col gap-6">

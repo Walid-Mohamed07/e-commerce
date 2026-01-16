@@ -14,7 +14,7 @@ const ListPage = async ({ searchParams }: { searchParams: SearchParams }) => {
   await dbConnect();
 
   const resolvedSearchParams = await searchParams;
-  console.log("Resolved Search Params:", resolvedSearchParams);
+  // console.log("Resolved Search Params:", resolvedSearchParams);
 
   // Fetch the product by slug from MongoDB
   const cat = await Category.findOne({ slug: resolvedSearchParams.cat });
