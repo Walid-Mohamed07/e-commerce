@@ -34,7 +34,7 @@ const CategoryListComponent = (prop: any) => {
           <Link
             href={`/list?cat=${item.slug}`}
             className="flex-shrink w-full sm:w-1/2 lg:w-1/4 xl:w-1/6"
-            key={item._id}
+            key={item.id}
           >
             <div className="relative bg-slate-100 w-full hoverScale transition-transform duration-200 ease-in-out">
               <Image

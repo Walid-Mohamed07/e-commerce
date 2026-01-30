@@ -30,9 +30,9 @@ function ProductListComponent({
         </div>
         ) : ( */}
       {products.items.map((product: Product) => (
-        // <ProductCard key={product._id} product={product} />
+        // <ProductCard key={product.id} product={product} />
         <Link
-          key={product._id}
+          key={product.id}
           href={`/${product.slug}`}
           className="w-full flex flex-col gap-4 sm:w-[45%] lg:w-[22%]"
         >
@@ -59,7 +59,7 @@ function ProductListComponent({
           <div className="flex justify-between">
             <span className="font-medium">{product.name}</span>
             <span className="font-semibold">
-              ${product.priceData?.discountedPrice}
+              ${product.price?.discountedPrice}
             </span>
           </div>
           {product.additionalInfoSections && (
@@ -68,8 +68,8 @@ function ProductListComponent({
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
                   product.additionalInfoSections.find(
-                    (section: any) => section.title === "Short Description"
-                  )?.description || ""
+                    (section: any) => section.title === "Short Description",
+                  )?.description || "",
                 ),
               }}
             ></div>

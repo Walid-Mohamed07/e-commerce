@@ -39,7 +39,7 @@ const CategoryList = async ({
     query.productType = { $in: [searchParams.type] };
   }
   if (searchParams?.min || searchParams?.max) {
-    query["priceData.discountedPrice"] = {
+    query["price.discountedPrice"] = {
       ...(searchParams.min && { $gte: parseFloat(searchParams.min) }),
       ...(searchParams.max && { $lte: parseFloat(searchParams.max) }),
     };

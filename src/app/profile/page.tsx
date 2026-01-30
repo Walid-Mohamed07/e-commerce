@@ -77,11 +77,11 @@ const ProfilePage = async () => {
         <div className="mt-12 flex flex-col">
           {/* {orderRes.orders.map((order) => (
             <Link
-              href={`/orders/${order._id}`}
-              key={order._id}
+              href={`/orders/${order.id}`}
+              key={order.id}
               className="flex justify-between px-2 py-6 rounded-md hover:bg-green-50 even:bg-slate-100"
             >
-              <span className="w-1/4">{order._id?.substring(0, 10)}...</span>
+              <span className="w-1/4">{order.id?.substring(0, 10)}...</span>
               <span className="w-1/4">
                 ${order.priceSummary?.subtotal?.amount}
               </span>

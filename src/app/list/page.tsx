@@ -51,7 +51,7 @@ const ListPage = async ({ searchParams }: { searchParams: SearchParams }) => {
       )}
       <Suspense fallback={<Skeleton />}>
         <ProductList
-          categoryId={cat?._id || "00000000-000000-000000-000000000001"}
+          categoryId={cat?.id || "00000000-000000-000000-000000000001"}
           // limit={2}
           searchParams={resolvedSearchParams}
         />

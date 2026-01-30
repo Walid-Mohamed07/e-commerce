@@ -1,22 +1,46 @@
-// import { OAuthStrategy, createClient } from "@wix/sdk";
 import { NextRequest, NextResponse } from "next/server";
 
-export const middleware = async (request: NextRequest) => {
-  const cookies = request.cookies;
-  const res = NextResponse.next();
+// Protected routes that require authentication
+const protectedRoutes = ["/dashboard", "/checkout", "/profile", "/orders"];
 
-  if (cookies.get("refreshToken")) {
-    return res;
+// Routes that should redirect to dashboard if already authenticated
+const authRoutes = ["/login", "/signup"];
+
+export const middleware = async (request: NextRequest) => {
+  const pathname = request.nextUrl.pathname;
+  const token = request.cookies.get("token")?.value;
+
+  // Check if the current path is a protected route
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
+
+  // Check if the current path is an auth route
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+
+  // Redirect logic
+  if (isProtectedRoute && !token) {
+    // User trying to access protected route without token
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // const wixClient = createClient({
-  //   auth: OAuthStrategy({ clientId: process.env.NEXT_PUBLIC_WIX_CLIENT_ID! }),
-  // });
+  if (isAuthRoute && token) {
+    // User trying to access auth route with token (already authenticated)
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
 
-  // const tokens = await wixClient.auth.generateVisitorTokens();
-  // res.cookies.set("refreshToken", JSON.stringify(tokens.refreshToken), {
-  //   maxAge: 60 * 60 * 24 * 30,
-  // });
+  return NextResponse.next();
+};
 
-  return res;
+export const config = {
+  matcher: [
+    // Protected routes
+    "/dashboard/:path*",
+    "/checkout/:path*",
+    "/profile/:path*",
+    "/orders/:path*",
+    // Auth routes
+    "/login",
+    "/signup",
+  ],
 };

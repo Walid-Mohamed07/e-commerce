@@ -29,7 +29,7 @@ export interface Category {
       };
       mediaType?: string;
       title?: string;
-      _id?: string;
+      id?: string;
     };
   };
   creator?: User;
