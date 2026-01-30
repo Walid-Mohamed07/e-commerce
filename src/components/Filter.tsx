@@ -12,8 +12,10 @@ const Filter = ({ categories }: Props) => {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
 
+  // console.log({ categories });
+
   const handleFilterChange = (
-    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
+    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>,
   ) => {
     const { name, value } = e.target;
     const params = new URLSearchParams(searchParams);
@@ -66,7 +68,7 @@ const Filter = ({ categories }: Props) => {
         >
           <option>Category</option>
           {categories.map((cat: any) => (
-            <option key={cat._id} value={cat.slug}>
+            <option key={cat.id} value={cat.slug}>
               {cat.name}
             </option>
           ))}

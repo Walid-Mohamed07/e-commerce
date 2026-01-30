@@ -12,7 +12,7 @@ export interface ProductMediaItem {
   thumbnail?: { url?: string; width?: number; height?: number };
   mediaType?: string;
   title?: string;
-  _id?: string;
+  id?: string;
 }
 
 export interface Media {
@@ -34,7 +34,7 @@ export interface MediaItem extends MediaItemItemOneOf {
   /** Media item title. */
   title?: string;
   /** Media ID (for example, `"nsplsh_306d666a123a4a74306459~mv2_d_4517_2992_s_4_2.jpg"`). */
-  _id?: string;
+  id?: string;
 }
 /** @oneof */
 export interface MediaItemItemOneOf {
@@ -99,7 +99,7 @@ export interface ProductOption {
 }
 
 export interface ProductVariantData {
-  priceData?: {
+  price?: {
     currency?: string;
     discountedPrice?: number;
     formatted?: { price?: string; discountedPrice?: string };
@@ -121,7 +121,7 @@ export interface ProductVariantData {
 }
 
 export interface ProductVariant {
-  _id?: string;
+  id?: string;
   variant?: ProductVariantData;
   stock?: {
     /** Whether inventory is being tracked. */
@@ -225,7 +225,7 @@ export declare enum InventoryStatus {
 
 // --- Main Product Type ---
 export interface Product {
-  _id?: string;
+  id?: string;
   name: string;
   slug: string;
   productType: string;
@@ -243,11 +243,11 @@ export interface Product {
     price?: number;
     formatted?: { price?: string; discountedPrice?: string };
   };
-  priceData?: {
-    currency?: string;
-    discountedPrice?: number;
-    formatted?: { price?: string; discountedPrice?: string };
-  };
+  // priceData?: {
+  //   currency?: string;
+  //   discountedPrice?: number;
+  //   formatted?: { price?: string; discountedPrice?: string };
+  // };
   convertedPriceData?: {
     currency?: string;
     discountedPrice?: number;

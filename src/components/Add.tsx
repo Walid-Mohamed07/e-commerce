@@ -1,7 +1,9 @@
 "use client";
 
-import { useCartStore } from "@/hooks/useCartStore";
-// import { useWixClient } from "@/hooks/useWixClient";
+import { cartService } from "@/features/product/services/cart";
+import SuccessToast from "@/components/Toast/SuccessToast";
+import ErrorToast from "@/components/Toast/ErrorToast";
+import Link from "next/link";
 import { useState } from "react";
 
 const Add = ({
@@ -14,9 +16,11 @@ const Add = ({
   stockNumber: number;
 }) => {
   const [quantity, setQuantity] = useState(1);
-
-  // // TEMPORARY
-  // const stock = 4;
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const handleQuantity = (type: "i" | "d") => {
     if (type === "d" && quantity > 1) {
@@ -27,12 +31,56 @@ const Add = ({
     }
   };
 
-  // const wixClient = useWixClient();
+  const handleAddToCart = async () => {
+    setLoading(true);
+    setMessage(null);
 
-  // const { addItem, isLoading } = useCartStore();
+    try {
+      await cartService.addToCart({
+        productId,
+        quantity,
+      });
+
+      setMessage({
+        type: "success",
+        text: "Product added to cart successfully!",
+      });
+
+      // Emit custom event to trigger cart modal update
+      window.dispatchEvent(new Event("cartUpdated"));
+
+      setQuantity(1);
+
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to add item to cart";
+
+      setMessage({
+        type: "error",
+        text: errorMessage,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
+      {message && (
+        <div>
+          {message.type === "success" ? (
+            <SuccessToast successMsg={message.text} />
+          ) : (
+            <ErrorToast errorMsg={message.text} />
+          )}
+        </div>
+      )}
       <h4 className="font-medium">Choose a Quantity</h4>
       <div className="flex justify-between">
         <div className="flex items-center gap-4">
@@ -64,11 +112,11 @@ const Add = ({
           )}
         </div>
         <button
-          // onClick={() => addItem(wixClient, productId, variantId, quantity)}
-          // disabled={isLoading}
-          className="w-36 text-sm rounded-3xl ring-1 ring-lama text-lama py-2 px-4 hover:bg-lama hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:ring-0 disabled:text-white disabled:ring-none"
+          onClick={handleAddToCart}
+          disabled={loading || stockNumber < 1}
+          className="w-36 text-sm rounded-3xl ring-1 ring-lama text-lama py-2 px-4 hover:bg-lama hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:ring-0 disabled:text-white disabled:ring-none transition-all duration-200"
         >
-          Add to Cart
+          {loading ? "Adding..." : "Add to Cart"}
         </button>
       </div>
     </div>

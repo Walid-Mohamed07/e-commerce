@@ -29,7 +29,7 @@ const ProductSchema = new Schema({
       discountedPrice: { type: String },
     },
   },
-  priceData: {
+  price: {
     currency: { type: String },
     discountedPrice: { type: Number },
     formatted: {
@@ -100,7 +100,7 @@ const ProductSchema = new Schema({
       },
       mediaType: { type: String },
       title: { type: String },
-      _id: { type: String },
+      id: { type: String },
     },
     items: [
       {
@@ -126,7 +126,7 @@ const ProductSchema = new Schema({
         },
         mediaType: { type: String },
         title: { type: String },
-        _id: { type: String },
+        id: { type: String },
       },
     ],
   },
@@ -169,7 +169,7 @@ const ProductSchema = new Schema({
               },
               mediaType: { type: String },
               title: { type: String },
-              _id: { type: String },
+              id: { type: String },
             },
             items: [
               {
@@ -195,7 +195,7 @@ const ProductSchema = new Schema({
                 },
                 mediaType: { type: String },
                 title: { type: String },
-                _id: { type: String },
+                id: { type: String },
               },
             ],
           },
@@ -218,7 +218,7 @@ const ProductSchema = new Schema({
   collectionIds: [{ type: String }],
   variants: [
     {
-      _id: { type: String },
+      id: { type: String },
       variant: {
         priceData: {
           currency: { type: String },

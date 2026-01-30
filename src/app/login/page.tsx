@@ -1,229 +1,176 @@
 "use client";
 
-// import { useWixClient } from "@/hooks/useWixClient";
-// import { LoginState } from "@wix/sdk";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import SuccessToast from "@/components/Toast/SuccessToast";
+import ErrorToast from "@/components/Toast/ErrorToast";
 
-enum MODE {
-  LOGIN = "LOGIN",
-  REGISTER = "REGISTER",
-  RESET_PASSWORD = "RESET_PASSWORD",
-  EMAIL_VERIFICATION = "EMAIL_VERIFICATION",
-}
-
-const LoginPage = () => {
-  // const wixClient = useWixClient();
+export default function LoginPage() {
   const router = useRouter();
+  const { login, isAuthenticated } = useAuth();
 
-  // const isLoggedIn = wixClient.auth.loggedIn();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-  // if (isLoggedIn) {
-  //   router.push("/");
-  // }
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
-  const [mode, setMode] = useState(MODE.LOGIN);
+  // Redirect if already authenticated
+  if (isAuthenticated) {
+    router.push("/dashboard");
+    return null;
+  }
 
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [emailCode, setEmailCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-  const formTitle =
-    mode === MODE.LOGIN
-      ? "Log in"
-      : mode === MODE.REGISTER
-      ? "Register"
-      : mode === MODE.RESET_PASSWORD
-      ? "Reset Your Password"
-      : "Verify Your Email";
-
-  const buttonTitle =
-    mode === MODE.LOGIN
-      ? "Login"
-      : mode === MODE.REGISTER
-      ? "Register"
-      : mode === MODE.RESET_PASSWORD
-      ? "Reset"
-      : "Verify";
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError("");
 
-    //   try {
-    //     let response;
+    // Validation
+    if (!formData.email.trim()) {
+      setMessage({ type: "error", text: "Email is required" });
+      return;
+    }
 
-    //     switch (mode) {
-    //       case MODE.LOGIN:
-    //         response = await wixClient.auth.login({
-    //           email,
-    //           password,
-    //         });
-    //         break;
-    //       case MODE.REGISTER:
-    //         response = await wixClient.auth.register({
-    //           email,
-    //           password,
-    //           profile: { nickname: username },
-    //         });
-    //         break;
-    //       case MODE.RESET_PASSWORD:
-    //         response = await wixClient.auth.sendPasswordResetEmail(
-    //           email,
-    //           window.location.href
-    //         );
-    //         setMessage("Password reset email sent. Please check your e-mail.");
-    //         break;
-    //       case MODE.EMAIL_VERIFICATION:
-    //         response = await wixClient.auth.processVerification({
-    //           verificationCode: emailCode,
-    //         });
-    //         break;
-    //       default:
-    //         break;
-    //     }
+    if (!formData.password.trim()) {
+      setMessage({ type: "error", text: "Password is required" });
+      return;
+    }
 
-    //     switch (response?.loginState) {
-    //       case LoginState.SUCCESS:
-    //         setMessage("Successful! You are being redirected.");
-    //         const tokens = await wixClient.auth.getMemberTokensForDirectLogin(
-    //           response.data.sessionToken!
-    //         );
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setMessage({ type: "error", text: "Please enter a valid email address" });
+      return;
+    }
 
-    //         Cookies.set("refreshToken", JSON.stringify(tokens.refreshToken), {
-    //           expires: 2,
-    //         });
-    //         wixClient.auth.setTokens(tokens);
-    //         router.push("/");
-    //         break;
-    //       case LoginState.FAILURE:
-    //         if (
-    //           response.errorCode === "invalidEmail" ||
-    //           response.errorCode === "invalidPassword"
-    //         ) {
-    //           setError("Invalid email or password!");
-    //         } else if (response.errorCode === "emailAlreadyExists") {
-    //           setError("Email already exists!");
-    //         } else if (response.errorCode === "resetPassword") {
-    //           setError("You need to reset your password!");
-    //         } else {
-    //           setError("Something went wrong!");
-    //         }
-    //       case LoginState.EMAIL_VERIFICATION_REQUIRED:
-    //         setMode(MODE.EMAIL_VERIFICATION);
-    //       case LoginState.OWNER_APPROVAL_REQUIRED:
-    //         setMessage("Your account is pending approval");
-    //       default:
-    //         break;
-    //     }
-    //   } catch (err) {
-    //     console.log(err);
-    //     setError("Something went wrong!");
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      await login(formData.email, formData.password);
+
+      setMessage({
+        type: "success",
+        text: "Login successful! Redirecting...",
+      });
+
+      // Redirect to dashboard after 2 seconds
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Login failed. Please check your credentials.";
+      setMessage({
+        type: "error",
+        text: errorMessage,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="h-[calc(100vh-80px)] px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64 flex items-center justify-center">
-      <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
-        <h1 className="text-2xl font-semibold">{formTitle}</h1>
-        {mode === MODE.REGISTER ? (
-          <div className="flex flex-col gap-2">
-            <label className="text-sm text-gray-700">Username</label>
-            <input
-              type="text"
-              name="username"
-              placeholder="john"
-              className="ring-2 ring-gray-300 rounded-md p-4"
-              onChange={(e) => setUsername(e.target.value)}
-            />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
+          <p className="text-gray-600 mt-2">Sign in to your account</p>
+        </div>
+
+        {/* Messages */}
+        {message && (
+          <div className="mb-6">
+            {message.type === "success" ? (
+              <SuccessToast successMsg={message.text} />
+            ) : (
+              <ErrorToast errorMsg={message.text} />
+            )}
           </div>
-        ) : null}
-        {mode !== MODE.EMAIL_VERIFICATION ? (
-          <div className="flex flex-col gap-2">
-            <label className="text-sm text-gray-700">E-mail</label>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email */}
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Email Address
+            </label>
             <input
               type="email"
+              id="email"
               name="email"
-              placeholder="john@gmail.com"
-              className="ring-2 ring-gray-300 rounded-md p-4"
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="you@example.com"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              disabled={loading}
             />
           </div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <label className="text-sm text-gray-700">Verification Code</label>
-            <input
-              type="text"
-              name="emailCode"
-              placeholder="Code"
-              className="ring-2 ring-gray-300 rounded-md p-4"
-              onChange={(e) => setEmailCode(e.target.value)}
-            />
-          </div>
-        )}
-        {mode === MODE.LOGIN || mode === MODE.REGISTER ? (
-          <div className="flex flex-col gap-2">
-            <label className="text-sm text-gray-700">Password</label>
+
+          {/* Password */}
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Password
+            </label>
             <input
               type="password"
+              id="password"
               name="password"
-              placeholder="Enter your password"
-              className="ring-2 ring-gray-300 rounded-md p-4"
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleInputChange}
+              placeholder="••••••••"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              disabled={loading}
             />
           </div>
-        ) : null}
-        {mode === MODE.LOGIN && (
-          <div
-            className="text-sm underline cursor-pointer"
-            onClick={() => setMode(MODE.RESET_PASSWORD)}
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 mt-6"
           >
-            Forgot Password?
-          </div>
-        )}
-        <button
-          className="bg-lama text-white p-2 rounded-md disabled:bg-pink-200 disabled:cursor-not-allowed"
-          disabled={isLoading}
-        >
-          {isLoading ? "Loading..." : buttonTitle}
-        </button>
-        {error && <div className="text-red-600">{error}</div>}
-        {mode === MODE.LOGIN && (
-          <div
-            className="text-sm underline cursor-pointer"
-            onClick={() => setMode(MODE.REGISTER)}
-          >
-            {"Don't"} have an account?
-          </div>
-        )}
-        {mode === MODE.REGISTER && (
-          <div
-            className="text-sm underline cursor-pointer"
-            onClick={() => setMode(MODE.LOGIN)}
-          >
-            Have and account?
-          </div>
-        )}
-        {mode === MODE.RESET_PASSWORD && (
-          <div
-            className="text-sm underline cursor-pointer"
-            onClick={() => setMode(MODE.LOGIN)}
-          >
-            Go back to Login
-          </div>
-        )}
-        {message && <div className="text-green-600 text-sm">{message}</div>}
-      </form>
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+          <p className="text-gray-600 text-sm">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/signup"
+              className="text-blue-600 hover:text-blue-700 font-semibold"
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default LoginPage;
+}

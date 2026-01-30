@@ -20,7 +20,7 @@ const SinglePage = async ({
   // Fetch the product by slug from MongoDB
   const product = await getProductBySlug(resolvedParams.slug);
   const shortDescSection = product.additionalInfoSections?.find(
-    (section: any) => section.title === "Short Description"
+    (section: any) => section.title === "Short Description",
   );
   // const product = await Product.findOne({ slug: resolvedParams.slug });
 
@@ -65,13 +65,13 @@ const SinglePage = async ({
         <div className="h-[2px] bg-gray-100" />
         {product.variants && product.productOptions ? (
           <CustomizeProducts
-            productId={product._id!}
+            productId={product.id!}
             variants={product.variants}
             productOptions={product.productOptions}
           />
         ) : (
           <Add
-            productId={product._id!}
+            productId={product.id!}
             variantId="00000000-0000-0000-0000-000000000000"
             stockNumber={product.stock?.quantity || 0}
           />
@@ -84,13 +84,13 @@ const SinglePage = async ({
                 <h4 className="font-medium mb-4">{section.title}</h4>
                 <p>{section.description}</p>
               </div>
-            )
+            ),
         )}
         <div className="h-[2px] bg-gray-100" />
         {/* REVIEWS */}
         <h1 className="text-2xl">User Reviews</h1>
         <Suspense fallback="Loading...">
-          {/* <Reviews productId={product._id!} /> */}
+          {/* <Reviews productId={product.id!} /> */}
         </Suspense>
       </div>
     </div>

@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CartModal from "./CartModal";
-import { useWixClient } from "@/hooks/useWixClient";
 import Cookies from "js-cookie";
-import { useCartStore } from "@/hooks/useCartStore";
+import useCart from "@/hooks/useCart";
+import { useAuth } from "@/context/AuthContext";
 
 const NavIcons = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -15,53 +15,50 @@ const NavIcons = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
-  const pathName = usePathname();
+  const { isAuthenticated, logout } = useAuth();
+  console.log({ isAuthenticated });
 
-  const wixClient = useWixClient();
-  const isLoggedIn = wixClient.auth.loggedIn();
-
-  // TEMPORARY
-  // const isLoggedIn = false;
+  const { cart, fetchCart } = useCart();
 
   const handleProfile = () => {
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       router.push("/login");
     } else {
       setIsProfileOpen((prev) => !prev);
     }
   };
 
-  // AUTH WITH WIX-MANAGED AUTH
-
-  // const wixClient = useWixClient();
-
-  // const login = async () => {
-  //   const loginRequestData = wixClient.auth.generateOAuthData(
-  //     "http://localhost:3000"
-  //   );
-
-  //   console.log(loginRequestData);
-
-  //   localStorage.setItem("oAuthRedirectData", JSON.stringify(loginRequestData));
-  //   const { authUrl } = await wixClient.auth.getAuthUrl(loginRequestData);
-  //   window.location.href = authUrl;
-  // };
-
   const handleLogout = async () => {
     setIsLoading(true);
-    Cookies.remove("refreshToken");
-    const { logoutUrl } = await wixClient.auth.logout(window.location.href);
-    setIsLoading(false);
-    setIsProfileOpen(false);
-    router.push(logoutUrl);
+    try {
+      await logout();
+      Cookies.remove("token");
+      setIsProfileOpen(false);
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-
-  const { cart, counter, getCart } = useCartStore();
-
+  // Fetch cart on mount
   useEffect(() => {
-    getCart(wixClient);
-  }, [wixClient, getCart]);
+    fetchCart();
+  }, [fetchCart]);
+
+  // Listen for cart updates and refresh counter
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      fetchCart();
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    return () => window.removeEventListener("cartUpdated", handleCartUpdate);
+  }, [fetchCart]);
+
+  // Calculate cart count
+  const cartCount = cart?.items?.length || 0;
 
   return (
     <div className="flex items-center gap-4 xl:gap-6 relative">
@@ -95,7 +92,7 @@ const NavIcons = () => {
       >
         <Image src="/cart.png" alt="" width={22} height={22} />
         <div className="absolute -top-4 -right-4 w-6 h-6 bg-lama rounded-full text-white text-sm flex items-center justify-center">
-          {counter}
+          {cartCount}
         </div>
       </div>
       {isCartOpen && <CartModal />}

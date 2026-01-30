@@ -33,6 +33,7 @@ const Navbar = () => {
             <Link href="/">Deals</Link>
             <Link href="/">About</Link>
             <Link href="/">Contact</Link>
+            <Link href="/dashboard">Dashboard</Link>
           </div>
         </div>
         {/* RIGHT */}

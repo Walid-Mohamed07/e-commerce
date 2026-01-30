@@ -28,7 +28,7 @@ const CustomizeProducts = ({
       const variantChoices = v.choices;
       if (!variantChoices) return false;
       return Object.entries(selectedOptions).every(
-        ([key, value]) => variantChoices[key] === value
+        ([key, value]) => variantChoices[key] === value,
       );
     });
     setSelectedVariant(variant);
@@ -45,7 +45,7 @@ const CustomizeProducts = ({
 
       return (
         Object.entries(choices).every(
-          ([key, value]) => variantChoices[key] === value
+          ([key, value]) => variantChoices[key] === value,
         ) &&
         variant.stock?.inStock &&
         variant.stock?.quantity &&
@@ -113,8 +113,8 @@ const CustomizeProducts = ({
                     backgroundColor: selected
                       ? "#f35c7a"
                       : disabled
-                      ? "#FBCFE8"
-                      : "white",
+                        ? "#FBCFE8"
+                        : "white",
                     color: selected || disabled ? "white" : "#f35c7a",
                     boxShadow: disabled ? "none" : "",
                   }}
@@ -131,7 +131,7 @@ const CustomizeProducts = ({
       <Add
         productId={productId}
         variantId={
-          selectedVariant?._id || "00000000-0000-0000-0000-000000000000"
+          selectedVariant?.id || "00000000-0000-0000-0000-000000000000"
         }
         stockNumber={selectedVariant?.stock?.quantity || 0}
       />

@@ -27,7 +27,7 @@ const CategorySchema = new Schema({
       },
       mediaType: { type: String },
       title: { type: String },
-      _id: { type: String },
+      id: { type: String },
     },
   },
   numberOfProducts: { type: Number },
