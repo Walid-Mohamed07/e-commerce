@@ -70,8 +70,9 @@ const Footer = () => {
               type="text"
               placeholder="Email address"
               className="p-4 w-3/4"
+              suppressHydrationWarning
             />
-            <button className="w-1/4 bg-lama text-white">JOIN</button>
+            <button className="w-1/4 bg-lama text-white" suppressHydrationWarning>JOIN</button>
           </div>
           <span className="font-semibold">Secure Payments</span>
           <div className="flex justify-between">

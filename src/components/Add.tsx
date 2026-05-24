@@ -1,19 +1,27 @@
 "use client";
 
-import { cartService } from "@/features/product/services/cart";
+import { useCartStore } from "@/hooks/useCartStore";
+import { VisitorCartProduct } from "@/lib/visitorCart";
 import SuccessToast from "@/components/Toast/SuccessToast";
 import ErrorToast from "@/components/Toast/ErrorToast";
-import Link from "next/link";
+import { getCookie } from "cookies-next";
 import { useState } from "react";
 
 const Add = ({
   productId,
   variantId,
   stockNumber,
+  productName,
+  productData,
 }: {
   productId: string;
   variantId: string;
   stockNumber: number;
+  productName?: string;
+  productData?: {
+    price?: { price?: number; discountedPrice?: number };
+    imageUrl?: string;
+  };
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -21,6 +29,8 @@ const Add = ({
     type: "success" | "error";
     text: string;
   } | null>(null);
+
+  const { addItem, addVisitorItem } = useCartStore();
 
   const handleQuantity = (type: "i" | "d") => {
     if (type === "d" && quantity > 1) {
@@ -36,18 +46,44 @@ const Add = ({
     setMessage(null);
 
     try {
-      await cartService.addToCart({
-        productId,
-        quantity,
-      });
+      const token = getCookie("token");
+
+      if (!token) {
+        const guestProduct: VisitorCartProduct = {
+          _id: productId,
+          name: productName || "Product",
+          price: productData?.price,
+          media: productData?.imageUrl
+            ? { mainMedia: { image: { url: productData.imageUrl } } }
+            : undefined,
+        };
+
+        addVisitorItem(guestProduct, quantity);
+      } else {
+        try {
+          await addItem(productId, quantity);
+        } catch (err: any) {
+          // Token was stale (401) — the interceptor cleared it; fall back to visitor cart
+          if (err?.response?.status === 401) {
+            const guestProduct: VisitorCartProduct = {
+              _id: productId,
+              name: productName || "Product",
+              price: productData?.price,
+              media: productData?.imageUrl
+                ? { mainMedia: { image: { url: productData.imageUrl } } }
+                : undefined,
+            };
+            addVisitorItem(guestProduct, quantity);
+          } else {
+            throw err;
+          }
+        }
+      }
 
       setMessage({
         type: "success",
         text: "Product added to cart successfully!",
       });
-
-      // Emit custom event to trigger cart modal update
-      window.dispatchEvent(new Event("cartUpdated"));
 
       setQuantity(1);
 
@@ -89,6 +125,7 @@ const Add = ({
               className="cursor-pointer text-xl disabled:cursor-not-allowed disabled:opacity-20"
               onClick={() => handleQuantity("d")}
               disabled={quantity === 1}
+              suppressHydrationWarning
             >
               -
             </button>
@@ -97,6 +134,7 @@ const Add = ({
               className="cursor-pointer text-xl disabled:cursor-not-allowed disabled:opacity-20"
               onClick={() => handleQuantity("i")}
               disabled={quantity === stockNumber}
+              suppressHydrationWarning
             >
               +
             </button>
@@ -115,6 +153,7 @@ const Add = ({
           onClick={handleAddToCart}
           disabled={loading || stockNumber < 1}
           className="w-36 text-sm rounded-3xl ring-1 ring-lama text-lama py-2 px-4 hover:bg-lama hover:text-white disabled:cursor-not-allowed disabled:bg-pink-200 disabled:ring-0 disabled:text-white disabled:ring-none transition-all duration-200"
+          suppressHydrationWarning
         >
           {loading ? "Adding..." : "Add to Cart"}
         </button>

@@ -13,10 +13,17 @@ const CustomizeProducts = ({
   productId,
   variants,
   productOptions,
+  productName,
+  productData,
 }: {
   productId: string;
   variants: ProductVariant[];
   productOptions: ProductOption[];
+  productName?: string;
+  productData?: {
+    price?: { price?: number; discountedPrice?: number };
+    imageUrl?: string;
+  };
 }) => {
   const [selectedOptions, setSelectedOptions] = useState<{
     [key: string]: string;
@@ -54,9 +61,10 @@ const CustomizeProducts = ({
     });
   };
 
-  // console.log("Options:", productOptions);
-  // console.log("variants:", variants);
-  // console.log("Selected Options:", selectedOptions);
+  const isColorOption = (choices?: ProductOptionChoice[]): boolean =>
+    !!choices?.some((c) =>
+      /^#([0-9A-Fa-f]{3,8})$|^rgb|^hsl|^[a-z]+$/i.test((c.value ?? "").trim()),
+    );
 
   return (
     <div className="flex flex-col gap-6">
@@ -67,11 +75,10 @@ const CustomizeProducts = ({
             {option.choices?.map((choice: ProductOptionChoice) => {
               const disabled = !isVariantInStock({
                 ...selectedOptions,
-                [option.name!]: choice.description!,
+                [option.name!]: choice.value!,
               });
 
-              const selected =
-                selectedOptions[option.name!] === choice.description;
+              const selected = selectedOptions[option.name!] === choice.value;
 
               const clickHandler = disabled
                 ? undefined
@@ -84,7 +91,7 @@ const CustomizeProducts = ({
                         return updated;
                       });
                     } else {
-                      handleOptionSelect(option.name!, choice.description!);
+                      handleOptionSelect(option.name!, choice.value!);
                     }
                   };
 
@@ -134,6 +141,8 @@ const CustomizeProducts = ({
           selectedVariant?.id || "00000000-0000-0000-0000-000000000000"
         }
         stockNumber={selectedVariant?.stock?.quantity || 0}
+        productName={productName}
+        productData={productData}
       />
       {/* COLOR */}
 

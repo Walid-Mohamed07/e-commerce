@@ -1,7 +1,7 @@
 'use client';
 
 import { FC, useEffect } from 'react';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 
 interface Props {
   errorMsg: string | undefined;
@@ -10,10 +10,10 @@ interface Props {
 const ErrorToast: FC<Props> = ({ errorMsg }) => {
   useEffect(() => {
     if (errorMsg) {
-      toast.error(errorMsg);
+      toast.error(errorMsg, { id: `error-${errorMsg}` });
     }
   }, [errorMsg]);
 
-  return <Toaster richColors position="top-right" closeButton />;
+  return null;
 };
 export default ErrorToast;

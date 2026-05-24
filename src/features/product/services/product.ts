@@ -13,6 +13,15 @@ export interface GetProductsPayload {
 
 export const getProducts = async (payload: GetProductsPayload = {}) => {
   try {
+    // If cat is "all-products", remove it from the query
+    if (payload.query) {
+      const query = JSON.parse(payload.query);
+      if (query.cat === "all-products") {
+        delete query.cat;
+        payload.query = JSON.stringify(query);
+      }
+    }
+
     const { data } = await api.get<ProductsQueryResult>("/product", {
       params: payload,
     });

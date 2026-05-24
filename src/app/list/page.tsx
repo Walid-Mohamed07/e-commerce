@@ -6,6 +6,7 @@ import { Category } from "@/models/Category";
 import { dbConnect } from "@/util/db_connection";
 import Image from "next/image";
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -14,6 +15,12 @@ const ListPage = async ({ searchParams }: { searchParams: SearchParams }) => {
   await dbConnect();
 
   const resolvedSearchParams = await searchParams;
+  
+  // If no category is selected, redirect to all-products
+  if (!resolvedSearchParams.cat) {
+    redirect("/list?cat=all-products");
+  }
+
   // console.log("Resolved Search Params:", resolvedSearchParams);
 
   // Fetch the product by slug from MongoDB
@@ -30,7 +37,7 @@ const ListPage = async ({ searchParams }: { searchParams: SearchParams }) => {
             Grab up to 50% off on
             <br /> Selected Products
           </h1>
-          <button className="rounded-3xl bg-lama text-white w-max py-3 px-5 text-sm">
+          <button className="rounded-3xl bg-lama text-white w-max py-3 px-5 text-sm" suppressHydrationWarning>
             Buy Now
           </button>
         </div>

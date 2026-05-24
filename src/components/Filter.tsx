@@ -21,11 +21,13 @@ const Filter = ({ categories }: Props) => {
     const params = new URLSearchParams(searchParams);
     if (
       value === "Type" ||
-      value === "Category" ||
       value === "All Filters" ||
       value === "Sort By"
     ) {
       params.delete(name);
+    } else if (value === "Category") {
+      // Set default category to "all-products" when Category is selected
+      params.set(name, "all-products");
     } else {
       params.set(name, value);
     }
@@ -41,8 +43,9 @@ const Filter = ({ categories }: Props) => {
           id=""
           className="py-2 px-4 rounded-2xl text-xs font-medium bg-[#EBEDED]"
           onChange={handleFilterChange}
+          suppressHydrationWarning
         >
-          <option>Type</option>
+          <option value="Type">Type</option>
           <option value="physical">Physical</option>
           <option value="digital">Digital</option>
         </select>
@@ -52,6 +55,7 @@ const Filter = ({ categories }: Props) => {
           placeholder="min price"
           className="text-xs rounded-2xl pl-2 w-24 ring-1 ring-gray-400"
           onChange={handleFilterChange}
+          suppressHydrationWarning
         />
         <input
           type="text"
@@ -59,16 +63,18 @@ const Filter = ({ categories }: Props) => {
           placeholder="max price"
           className="text-xs rounded-2xl pl-2 w-24 ring-1 ring-gray-400"
           onChange={handleFilterChange}
+          suppressHydrationWarning
         />
         {/* TODO: Filter Categories */}
         <select
           name="cat"
           className="py-2 px-4 rounded-2xl text-xs font-medium bg-[#EBEDED]"
           onChange={handleFilterChange}
+          suppressHydrationWarning
         >
-          <option>Category</option>
+          <option value="Category">Category</option>
           {categories.map((cat: any) => (
-            <option key={cat.id} value={cat.slug}>
+            <option key={cat._id ?? cat.id} value={cat.slug}>
               {cat.name}
             </option>
           ))}
@@ -77,6 +83,7 @@ const Filter = ({ categories }: Props) => {
           name=""
           id=""
           className="py-2 px-4 rounded-2xl text-xs font-medium bg-[#EBEDED]"
+          suppressHydrationWarning
         >
           <option>All Filters</option>
         </select>
@@ -87,6 +94,7 @@ const Filter = ({ categories }: Props) => {
           id=""
           className="py-2 px-4 rounded-2xl text-xs font-medium bg-white ring-1 ring-gray-400"
           onChange={handleFilterChange}
+          suppressHydrationWarning
         >
           <option>Sort By</option>
           <option value="asc price">Price (low to high)</option>

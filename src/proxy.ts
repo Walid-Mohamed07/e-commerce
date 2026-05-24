@@ -6,7 +6,7 @@ const protectedRoutes = ["/dashboard", "/checkout", "/profile", "/orders"];
 // Routes that should redirect to dashboard if already authenticated
 const authRoutes = ["/login", "/signup"];
 
-export const middleware = async (request: NextRequest) => {
+export const proxy = async (request: NextRequest) => {
   const pathname = request.nextUrl.pathname;
   const token = request.cookies.get("token")?.value;
 
@@ -29,18 +29,27 @@ export const middleware = async (request: NextRequest) => {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  // Assign a persistent visitorId cookie to unauthenticated users so their
+  // guest cart can be identified and later merged on login.
+  if (!token && !request.cookies.get("visitorId")?.value) {
+    const visitorId = crypto.randomUUID();
+    response.cookies.set("visitorId", visitorId, {
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: "/",
+      sameSite: "lax",
+      httpOnly: false, // readable by client JS to cross-reference localStorage
+      secure: process.env.NODE_ENV === "production",
+    });
+  }
+
+  return response;
 };
 
 export const config = {
   matcher: [
-    // Protected routes
-    "/dashboard/:path*",
-    "/checkout/:path*",
-    "/profile/:path*",
-    "/orders/:path*",
-    // Auth routes
-    "/login",
-    "/signup",
+    // Exclude Next.js internals and static assets; run on all other routes
+    "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|css|js)).*)",
   ],
 };
