@@ -53,7 +53,14 @@ const ProductCard: FC<ProductCardProps> = ({ product }) => {
           ></div>
         )}
       </Link>
-      <AddToCartButton productId={product.id!} productName={product.name} />
+      <AddToCartButton
+        productId={(product._id ?? product.id)!}
+        productName={product.name}
+        productData={{
+          price: product.price,
+          imageUrl: product.media?.mainMedia?.image?.url,
+        }}
+      />
     </div>
   );
 };

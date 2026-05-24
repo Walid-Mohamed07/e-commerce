@@ -16,13 +16,21 @@ export interface CheckoutPayload {
   shippingNotes?: string;
 }
 
+export interface CartItemProduct {
+  _id?: string;
+  name?: string;
+  price?: { price?: number; discountedPrice?: number };
+  stock?: { inStock?: boolean; quantity?: number };
+  media?: {
+    mainMedia?: { image?: { url?: string }; thumbnail?: { url?: string } };
+    items?: Array<{ image?: { url?: string } }>;
+  };
+}
+
 export interface CartItem {
-  productId: string;
+  product: CartItemProduct | string;
   quantity: number;
-  price?: number;
-  productImage?: string;
-  productName?: string;
-  subtotal?: number;
+  price: number;
 }
 
 export interface Cart {
@@ -75,11 +83,11 @@ export const cartService = {
 
   /**
    * Add item to cart
-   * POST /cart/add
+   * POST /cart/items
    */
   addToCart: async (payload: AddToCartPayload): Promise<Cart> => {
     try {
-      const response = await api.post<Cart>("/cart/add", payload);
+      const response = await api.post<Cart>("/cart/items", payload);
       return response.data;
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -97,7 +105,7 @@ export const cartService = {
   ): Promise<Cart> => {
     try {
       const response = await api.patch<Cart>(
-        `/cart/item/${productId}`,
+        `/cart/items/${productId}`,
         payload,
       );
       return response.data;
@@ -113,7 +121,7 @@ export const cartService = {
    */
   removeCartItem: async (productId: string): Promise<Cart> => {
     try {
-      const response = await api.delete<Cart>(`/cart/item/${productId}`);
+      const response = await api.delete<Cart>(`/cart/items/${productId}`);
       return response.data;
     } catch (error) {
       console.error("Error removing cart item:", error);

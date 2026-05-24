@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import QueryProvider from "@/components/shared/QueryProvider";
 import { AuthProvider } from "@/context/AuthContext";
+import ToastProvider from "@/components/Toast/ToastProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <QueryProvider>
+            <ToastProvider />
             <Navbar />
             {children}
             <Footer />

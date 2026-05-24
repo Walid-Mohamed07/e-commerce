@@ -65,15 +65,25 @@ const SinglePage = async ({
         <div className="h-[2px] bg-gray-100" />
         {product.variants && product.productOptions ? (
           <CustomizeProducts
-            productId={product.id!}
+            productId={(product._id ?? product.id)!}
             variants={product.variants}
             productOptions={product.productOptions}
+            productName={product.name}
+            productData={{
+              price: product.price,
+              imageUrl: product.media?.mainMedia?.image?.url,
+            }}
           />
         ) : (
           <Add
-            productId={product.id!}
+            productId={(product._id ?? product.id)!}
             variantId="00000000-0000-0000-0000-000000000000"
             stockNumber={product.stock?.quantity || 0}
+            productName={product.name}
+            productData={{
+              price: product.price,
+              imageUrl: product.media?.mainMedia?.image?.url,
+            }}
           />
         )}
         <div className="h-[2px] bg-gray-100" />
@@ -89,8 +99,8 @@ const SinglePage = async ({
         <div className="h-[2px] bg-gray-100" />
         {/* REVIEWS */}
         <h1 className="text-2xl">User Reviews</h1>
-        <Suspense fallback="Loading...">
-          {/* <Reviews productId={product.id!} /> */}
+        <Suspense fallback={<p className="text-sm text-gray-400">Loading reviews…</p>}>
+          <Reviews productId={(product._id ?? product.id)!} />
         </Suspense>
       </div>
     </div>

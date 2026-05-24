@@ -1,5 +1,7 @@
-import { FC, useEffect } from 'react';
-import { toast, Toaster } from 'sonner';
+"use client";
+
+import { FC, useEffect } from "react";
+import { toast } from "sonner";
 
 interface Props {
   infoMsg: string;
@@ -10,12 +12,13 @@ const InfoToast: FC<Props> = ({ infoMsg, onMessageClose }) => {
   useEffect(() => {
     if (infoMsg) {
       toast.info(infoMsg, {
+        id: `info-${infoMsg}`,
         onDismiss: onMessageClose,
         onAutoClose: onMessageClose,
       });
     }
   }, [infoMsg, onMessageClose]);
 
-  return <Toaster richColors position="top-right" closeButton />;
+  return null;
 };
 export default InfoToast;

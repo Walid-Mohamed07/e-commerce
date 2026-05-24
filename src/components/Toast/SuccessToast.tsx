@@ -1,18 +1,21 @@
-import { FC, useEffect } from 'react';
-import { toast, Toaster } from 'sonner';
+"use client";
+
+import { FC, useEffect } from "react";
+import { toast } from "sonner";
 
 interface Props {
   successMsg: string;
   onMessageClose?: () => void;
 }
 
-const ErrorToast: FC<Props> = ({
+const SuccessToast: FC<Props> = ({
   successMsg: successMessage,
   onMessageClose,
 }) => {
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage, {
+        id: `success-${successMessage}`,
         onAutoClose: onMessageClose,
         onDismiss: onMessageClose,
       });
@@ -20,6 +23,6 @@ const ErrorToast: FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [successMessage]);
 
-  return <Toaster richColors position="top-right" closeButton />;
+  return null;
 };
-export default ErrorToast;
+export default SuccessToast;

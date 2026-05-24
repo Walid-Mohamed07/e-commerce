@@ -225,6 +225,7 @@ export declare enum InventoryStatus {
 
 // --- Main Product Type ---
 export interface Product {
+  _id?: string;
   id?: string;
   name: string;
   slug: string;

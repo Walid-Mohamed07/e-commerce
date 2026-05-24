@@ -85,7 +85,11 @@ const ProductList = async ({
   // console.log("Products fetched:", products);
 
   return (
-    <ProductListComponent products={products[0] || {}} isLoading={isLoading} />
+    <ProductListComponent
+      products={products[0] || {}}
+      isLoading={isLoading}
+      searchParams={searchParams}
+    />
   );
 };
 

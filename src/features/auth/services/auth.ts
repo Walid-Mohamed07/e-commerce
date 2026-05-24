@@ -12,7 +12,7 @@ export interface SignupPayload {
   email: string;
   password: string;
   role?: string;
-  profilePicture?: string;
+  profilePicture?: File;
 }
 
 export interface AuthResponse {
@@ -60,7 +60,13 @@ export const authService = {
    */
   signup: async (payload: SignupPayload): Promise<string> => {
     try {
-      const response = await api.post<AuthResponse>("/auth/signup", payload);
+      const body = new FormData();
+      body.append("username", payload.username);
+      body.append("email", payload.email);
+      body.append("password", payload.password);
+      if (payload.role) body.append("role", payload.role);
+      if (payload.profilePicture) body.append("profilePicture", payload.profilePicture);
+      const response = await api.post<AuthResponse>("/auth/signup", body);
       const token = response.data.token;
 
       // Store token in cookies
@@ -80,12 +86,30 @@ export const authService = {
 
   /**
    * Get authenticated user profile
-   * GET /auth/profile
+   * Decodes JWT to extract user ID, then GET /user/:id
    */
   getProfile: async (): Promise<UserProfile> => {
     try {
-      const response = await api.get<UserProfile>("/auth/profile");
-      return response.data;
+      const token = getCookie("token");
+      if (!token) throw new Error("No token found");
+
+      // Decode JWT payload (base64url) — no library needed, just reading claims
+      const payloadB64 = String(token).split(".")[1];
+      const payload = JSON.parse(
+        atob(payloadB64.replace(/-/g, "+").replace(/_/g, "/")),
+      );
+      const userId: string = payload.sub;
+
+      const response = await api.get<any>(`/user/${userId}`);
+      const u = response.data;
+      return {
+        id: u._id ?? u.id ?? userId,
+        username: u.username,
+        email: u.email,
+        role: u.role?.name ?? u.role,
+        profilePicture: u.profilePicture,
+        createdAt: u.createdAt,
+      };
     } catch (error) {
       console.error("Error fetching profile:", error);
       throw error;

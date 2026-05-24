@@ -3,34 +3,41 @@
 import Image from "next/image";
 import { useEffect } from "react";
 import Link from "next/link";
-import useCart from "@/hooks/useCart";
+import { useCartStore } from "@/hooks/useCartStore";
 import ErrorToast from "@/components/Toast/ErrorToast";
+import { CartItemProduct } from "@/features/product/services/cart";
+
+const getProductId = (product: CartItemProduct | string): string => {
+  if (typeof product === "string") return product;
+  return product._id ?? "";
+};
+
+const getProductName = (product: CartItemProduct | string): string => {
+  if (typeof product === "string") return "Product";
+  return product.name ?? "Product";
+};
+
+const getProductImage = (product: CartItemProduct | string): string | null => {
+  if (typeof product === "string") return null;
+  return (
+    product.media?.mainMedia?.image?.url ||
+    product.media?.mainMedia?.thumbnail?.url ||
+    product.media?.items?.[0]?.image?.url ||
+    null
+  );
+};
 
 const CartModal = () => {
-  const { cart, loading, error, fetchCart, removeItem } = useCart();
+  const { cart, isLoading: loading, error, fetchCart, removeItem } = useCartStore();
 
   // Fetch cart on component mount
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [fetchCart]);
 
-  // Listen for cart updates from Add to Cart actions
-  useEffect(() => {
-    const handleCartUpdate = () => {
-      fetchCart();
-    };
-
-    window.addEventListener("cartUpdated", handleCartUpdate);
-    return () => {
-      window.removeEventListener("cartUpdated", handleCartUpdate);
-    };
-  }, []);
-
-  const handleRemoveItem = async (productId: string) => {
+  const handleRemoveItem = async (product: CartItemProduct | string) => {
     try {
-      await removeItem(productId);
-      // Emit event to update cart counter in navbar
-      window.dispatchEvent(new Event("cartUpdated"));
+      await removeItem(getProductId(product));
     } catch (err) {
       console.error("Failed to remove item:", err);
     }
@@ -63,16 +70,18 @@ const CartModal = () => {
             {cart &&
               cart.items &&
               cart.items.length > 0 &&
-              cart.items.map((item) => (
-                <div className="flex gap-4" key={item.productId}>
+              cart.items.map((item) => {
+                const imgUrl = getProductImage(item.product);
+                return (
+                <div className="flex gap-4" key={getProductId(item.product)}>
                   {/* IMAGE */}
-                  {item.productImage && (
+                  {imgUrl && (
                     <div className="relative w-16 h-16 flex-shrink-0">
                       <Image
-                        src={item.productImage}
-                        alt={item.productName || "Product"}
+                        src={imgUrl}
+                        alt={getProductName(item.product)}
                         fill
-                        className="object-cover rounded"
+                        className="object-contain rounded bg-slate-100"
                       />
                     </div>
                   )}
@@ -82,7 +91,7 @@ const CartModal = () => {
                       {/* TITLE */}
                       <div className="flex items-center justify-between gap-8">
                         <h3 className="font-semibold text-sm">
-                          {item.productName || "Product"}
+                          {getProductName(item.product)}
                         </h3>
                         <div className="p-1 bg-gray-50 rounded-sm flex items-center gap-2 text-sm">
                           {item.quantity && item.quantity > 1 && (
@@ -95,7 +104,7 @@ const CartModal = () => {
                       </div>
                       {/* DESC */}
                       <div className="text-xs text-gray-500 mt-1">
-                        Product ID: {item.productId.substring(0, 8)}...
+                        ID: {getProductId(item.product).substring(0, 8)}...
                       </div>
                     </div>
                     {/* BOTTOM */}
@@ -104,7 +113,7 @@ const CartModal = () => {
                         Qty. {item.quantity}
                       </span>
                       <button
-                        onClick={() => handleRemoveItem(item.productId)}
+                        onClick={() => handleRemoveItem(item.product)}
                         disabled={loading}
                         className="text-blue-500 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed"
                       >
@@ -113,7 +122,8 @@ const CartModal = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
           </div>
 
           {/* BOTTOM */}

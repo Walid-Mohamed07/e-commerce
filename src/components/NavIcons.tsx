@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CartModal from "./CartModal";
 import Cookies from "js-cookie";
-import useCart from "@/hooks/useCart";
+import { useCartStore } from "@/hooks/useCartStore";
 import { useAuth } from "@/context/AuthContext";
 
 const NavIcons = () => {
@@ -16,9 +16,9 @@ const NavIcons = () => {
 
   const router = useRouter();
   const { isAuthenticated, logout } = useAuth();
-  console.log({ isAuthenticated });
+  // console.log({ isAuthenticated });
 
-  const { cart, fetchCart } = useCart();
+  const { cartCount, fetchCart } = useCartStore();
 
   const handleProfile = () => {
     if (!isAuthenticated) {
@@ -34,7 +34,7 @@ const NavIcons = () => {
       await logout();
       Cookies.remove("token");
       setIsProfileOpen(false);
-      router.push("/login");
+      router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
@@ -42,23 +42,10 @@ const NavIcons = () => {
     }
   };
 
-  // Fetch cart on mount
+  // Fetch cart on mount to initialise the global store
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
-
-  // Listen for cart updates and refresh counter
-  useEffect(() => {
-    const handleCartUpdate = () => {
-      fetchCart();
-    };
-
-    window.addEventListener("cartUpdated", handleCartUpdate);
-    return () => window.removeEventListener("cartUpdated", handleCartUpdate);
-  }, [fetchCart]);
-
-  // Calculate cart count
-  const cartCount = cart?.items?.length || 0;
 
   return (
     <div className="flex items-center gap-4 xl:gap-6 relative">

@@ -34,8 +34,9 @@ const SearchBar = () => {
         name="name"
         placeholder="Search"
         className="flex-1 bg-transparent outline-none"
+        suppressHydrationWarning
       />
-      <button className="cursor-pointer">
+      <button className="cursor-pointer" suppressHydrationWarning>
         <Image src="/search.png" alt="" width={16} height={16} />
       </button>
     </form>

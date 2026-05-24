@@ -8,6 +8,25 @@ import React, {
   ReactNode,
 } from "react";
 import { authService, UserProfile } from "@/features/auth/services/auth";
+import { visitorCartLib } from "@/lib/visitorCart";
+import { cartService } from "@/features/product/services/cart";
+
+/** Push any locally-stored guest cart items to the server, then clear them. */
+const mergeVisitorCart = async (): Promise<void> => {
+  const visitorCart = visitorCartLib.getCart();
+  if (!visitorCart.items.length) return;
+  for (const item of visitorCart.items) {
+    try {
+      await cartService.addToCart({
+        productId: item.product._id,
+        quantity: item.quantity,
+      });
+    } catch {
+      // If a single item fails (e.g. out of stock) we skip it and continue
+    }
+  }
+  visitorCartLib.clearCart();
+};
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -19,7 +38,7 @@ interface AuthContextType {
     email: string,
     password: string,
     role?: string,
-    profilePicture?: string,
+    profilePicture?: File,
   ) => Promise<void>;
   logout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
@@ -62,6 +81,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const profile = await authService.getProfile();
       setUser(profile);
       setIsAuthenticated(true);
+      // Merge any items added while browsing as a guest
+      await mergeVisitorCart();
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
@@ -75,7 +96,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     email: string,
     password: string,
     role?: string,
-    profilePicture?: string,
+    profilePicture?: File,
   ) => {
     setLoading(true);
     try {
@@ -89,6 +110,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const profile = await authService.getProfile();
       setUser(profile);
       setIsAuthenticated(true);
+      // Merge any items added while browsing as a guest
+      await mergeVisitorCart();
     } catch (error) {
       console.error("Signup failed:", error);
       throw error;

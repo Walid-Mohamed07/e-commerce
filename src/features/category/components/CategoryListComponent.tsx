@@ -28,13 +28,13 @@ const CategoryListComponent = (prop: any) => {
     //   )}
     // >
     // <Suspense fallback={<Skeleton />}>
-    <div className="px-4 pt-6 overflow-x-scroll scrollbar-hide hover:bg-red-600">
+    <div className="px-4 pt-6 overflow-x-scroll scrollbar-hide">
       <div className="flex gap-4 md:gap-8 mt-6">
-        {categories.map((item: any) => (
+        {categories.map((item: any, index: number) => (
           <Link
+            key={item.id || `category-${index}`}
             href={`/list?cat=${item.slug}`}
             className="flex-shrink w-full sm:w-1/2 lg:w-1/4 xl:w-1/6"
-            key={item.id}
           >
             <div className="relative bg-slate-100 w-full hoverScale transition-transform duration-200 ease-in-out">
               <Image
